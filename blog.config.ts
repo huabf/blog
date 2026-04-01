@@ -4,7 +4,7 @@ const basicConfig = {
 	title: 'mushroom growing',
 	subtitle: 'HELLO-:>',
 	// 长 description 利好于 SEO
-	description: 'HELLO-:>',
+	description: 'HELLO:->',
 		author: {
 			name: 'mushroom',
 			avatar: '/images/avatar.jpg',
