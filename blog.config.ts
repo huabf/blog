@@ -2,9 +2,9 @@ import type { FeedEntry } from './app/types/feed'
 
 const basicConfig = {
 	title: 'mushroom growing',
-	subtitle: 'HELLO:->',
+	subtitle: 'HELLO:- >',
 	// 长 description 利好于 SEO
-	description: 'HELLO:->',
+	description: 'HELLO:- >',
 		author: {
 			name: 'mushroom',
 			avatar: '/images/avatar.jpg',
