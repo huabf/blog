@@ -5,8 +5,8 @@ import { myFeed } from '../blog.config'
 export default [
 	// #region 博客圈
 	{
-		name: '博客圈',
-		desc: '优质个人博客和技术分享站点。',
+		name: '好友博客',
+		desc: 'wait to be added...TVT',
 		// @keep-sorted { "keys": ["date"] }
 		entries: [
 			myFeed,

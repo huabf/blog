@@ -65,7 +65,7 @@ export default defineAppConfig({
 			{
 				title: '社交',
 				items: [
-					{ icon: 'ph:github-logo-bold', text: 'GitHub', url: 'https://github.com/huabf' },
+					{ icon: 'ph:github-logo-bold', text: 'GitHub:huabf', url: 'https://github.com/huabf' },
 					{ icon: 'ph:envelope-simple-bold', text: blogConfig.author.email, url: `mailto:${blogConfig.author.email}` },
 				],
 			},
