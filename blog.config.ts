@@ -5,12 +5,12 @@ const basicConfig = {
 	subtitle: 'HELLO-:>',
 	// 长 description 利好于 SEO
 	description: 'HELLO-:>',
-	author: {
-		name: 'mushroom',
-		avatar: 'https://raw.githubusercontent.com/huabf/blog-images/main//images/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20260401180707_137_2.jpg',
-		email: '',
-		homepage: 'https://github.com/huabf',
-	},
+		author: {
+			name: 'mushroom',
+			avatar: 'https://raw.githubusercontent.com/huabf/blog-images/main/images/微信图片_20260401180707_137_2.jpg',
+			email: '',
+			homepage: 'https://github.com/huabf',
+		},
 	copyright: {
 		abbr: 'CC BY-NC-SA 4.0',
 		name: '署名-非商业性使用-相同方式共享 4.0 国际',
