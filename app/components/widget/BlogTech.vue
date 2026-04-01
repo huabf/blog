@@ -30,20 +30,8 @@ const [pm, pmVersion] = packageManager.split('@') as [string, string]
 	}
 
 	const service = computed(() => {
-		const storageItem = () => {
-			const avatar = appConfig.author?.avatar || ''
-			if (!avatar)
-				return '未知'
-			if (avatar.startsWith('/'))
-				return [h(Icon, { name: 'ph:folder' }), ' 仓库 public']
-			try {
-				const u = new URL(avatar)
-				return [h(Icon, { name: hostIcon(u.hostname), alt: '' }), ` ${u.hostname}`]
-			}
-			catch {
-				return avatar
-			}
-		}
+		// 固定显示为 GitHub
+		const storageItem = () => [h(Icon, { name: 'simple-icons:github', alt: '' }), ' GitHub']
 
 		return [
 			...ci ? [{ label: '构建平台', value: ciPlatform }] : [],
