@@ -21,13 +21,38 @@ const ciPlatform = computed(() => {
 const packages = Object.assign({}, ...Object.values(pnpmWorkspace.catalogs as any)) as Record<string, string>
 const [pm, pmVersion] = packageManager.split('@') as [string, string]
 
-const service = computed(() => ([
-	...ci ? [{ label: '构建平台', value: ciPlatform }] : [],
-	{ label: '图片存储', value: () => [h(Icon, { name: 'simple-icons:cloudflare', alt: '' }), ' R2'] },
-	{ label: '软件协议', value: 'MIT' },
-	{ label: '文章许可', value: appConfig.copyright.abbr },
-	{ label: '规范域名', value: getDomain(appConfig.url) },
-]))
+	function hostIcon(host: string) {
+		if (/cloudflare|r2/i.test(host))
+			return 'simple-icons:cloudflare'
+		if (/github|raw.githubusercontent|githubusercontent/i.test(host))
+			return 'simple-icons:github'
+		return 'ph:link'
+	}
+
+	const service = computed(() => {
+		const storageItem = () => {
+			const avatar = appConfig.author?.avatar || ''
+			if (!avatar)
+				return '未知'
+			if (avatar.startsWith('/'))
+				return [h(Icon, { name: 'ph:folder' }), ' 仓库 public']
+			try {
+				const u = new URL(avatar)
+				return [h(Icon, { name: hostIcon(u.hostname), alt: '' }), ` ${u.hostname}`]
+			}
+			catch {
+				return avatar
+			}
+		}
+
+		return [
+			...ci ? [{ label: '构建平台', value: ciPlatform }] : [],
+			{ label: '图片存储', value: storageItem },
+			{ label: '软件协议', value: 'MIT' },
+			{ label: '文章许可', value: appConfig.copyright.abbr },
+			{ label: '规范域名', value: getDomain(appConfig.url) },
+		]
+	})
 
 const techstack = computed(() => ([
 	{ label: 'Blog', value: version },
