@@ -3,7 +3,7 @@ title: post1-month4
 description: 讲述关于post1-month4的故事，并根据test给出生活。
 date: 2026-04-01 19:13:30
 updated: 2026-04-01 19:13:30
-image: # 封面图推荐 2:1，不含与标题重复的文字
+image: https://raw.githubusercontent.com/huabf/blog-images/main/images/V2S7vyxetm9Agbd.thumb.400_0.jpg?token=AIJGPWC7SITS4BU6IRQF74TJZUQIG
 categories: [生活]
 tags: [test]
 ---
