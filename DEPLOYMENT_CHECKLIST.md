@@ -217,3 +217,5 @@ description: '博客描述',
 ---
 
 **记录你的进度:** 遇到问题了吗？创建一个 GitHub Issue 或查看主题官方文档
+
+<!-- redeploy-trigger: 2026-04-01T10:50:00Z -->
