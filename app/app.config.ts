@@ -58,7 +58,7 @@ export default defineAppConfig({
 		/** 侧边栏底部图标导航 */
 		iconNav: [
 			{ icon: 'ph:house-bold', text: '个人主页', url: blogConfig.author.homepage },
-			{ icon: 'ph:github-logo-bold', text: 'GitHub', url: 'https://github.com/huabf' },
+			{ icon: 'ph:github-logo-bold', text: 'GitHub:huabf', url: 'https://github.com/huabf' },
 		] satisfies NavItem[],
 		/** 页脚站点地图 */
 		nav: [
