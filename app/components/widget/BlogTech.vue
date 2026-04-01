@@ -35,7 +35,7 @@ const [pm, pmVersion] = packageManager.split('@') as [string, string]
 			if (!avatar)
 				return '未知'
 			if (avatar.startsWith('/'))
-				return [h(Icon, { name: 'ph:folder' }), ' GitHub']
+				return [h(Icon, { name: 'ph:folder' }), ' 仓库 public']
 			try {
 				const u = new URL(avatar)
 				return [h(Icon, { name: hostIcon(u.hostname), alt: '' }), ` ${u.hostname}`]
