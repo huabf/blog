@@ -1,15 +1,15 @@
 import type { FeedEntry } from './app/types/feed'
 
 const basicConfig = {
-	title: '我的博客',
-	subtitle: '记录与分享',
+	title: 'mushroom growing',
+	subtitle: 'HELLO-:>',
 	// 长 description 利好于 SEO
-	description: '这是我的个人博客。',
+	description: 'HELLO-:>',
 	author: {
-		name: '你的昵称',
+		name: 'mushroom',
 		avatar: 'https://example.com/avatar.png',
-		email: 'you@example.com',
-		homepage: 'https://example.com/',
+		email: '',
+		homepage: 'https://github.com/huabf',
 	},
 	copyright: {
 		abbr: 'CC BY-NC-SA 4.0',
@@ -85,7 +85,7 @@ const blogConfig = {
 /** 用于生成 OPML 和友链页面配置 */
 export const myFeed: FeedEntry = {
 	author: blogConfig.author.name,
-	sitenick: '我的博客',
+	sitenick: 'mushroom growing',
 	title: blogConfig.title,
 	desc: blogConfig.subtitle || blogConfig.description,
 	link: blogConfig.url,
@@ -94,7 +94,7 @@ export const myFeed: FeedEntry = {
 	avatar: blogConfig.author.avatar,
 	archs: ['Nuxt', 'Vercel'],
 	date: blogConfig.timeEstablished,
-	comment: '这是我自己',
+	comment: 'mushroom 的博客',
 }
 
 export default blogConfig
