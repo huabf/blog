@@ -222,6 +222,8 @@ ${packageJson.homepage}
 		format: ['avif', 'webp'],
 		// Neylify 下 netlify 处理器无法显示站外图片，ipx 处理器无法显示站内图片，需彻底禁用
 		// https://github.com/nuxt/image/issues/1353
+		// 允许外部图片域名（例如 GitHub raw 用作图床）
+		domains: ['raw.githubusercontent.com'],
 		provider: NETLIFY ? 'none' : undefined,
 	},
 
