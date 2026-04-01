@@ -7,7 +7,7 @@ const basicConfig = {
 	description: 'HELLO-:>',
 		author: {
 			name: 'mushroom',
-			avatar: 'https://raw.githubusercontent.com/huabf/blog-images/main/images/微信图片_20260401180707_137_2.jpg',
+			avatar: '/images/avatar.jpg',
 			email: '',
 			homepage: 'https://github.com/huabf',
 		},
