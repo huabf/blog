@@ -58,21 +58,14 @@ export default defineAppConfig({
 		/** 侧边栏底部图标导航 */
 		iconNav: [
 			{ icon: 'ph:house-bold', text: '个人主页', url: blogConfig.author.homepage },
-			{ icon: 'ph:github-logo-bold', text: 'GitHub', url: 'https://github.com/yourname' },
-			{ icon: 'ph:rss-simple-bold', text: 'Atom订阅', url: '/atom.xml' },
+			{ icon: 'ph:github-logo-bold', text: 'GitHub', url: 'https://github.com/huabf' },
 		] satisfies NavItem[],
 		/** 页脚站点地图 */
 		nav: [
 			{
-				title: '探索',
-				items: [
-					{ icon: 'ph:rss-simple-bold', text: 'Atom订阅', url: '/atom.xml' },
-				],
-			},
-			{
 				title: '社交',
 				items: [
-					{ icon: 'ph:github-logo-bold', text: 'GitHub', url: 'https://github.com/yourname' },
+					{ icon: 'ph:github-logo-bold', text: 'GitHub', url: 'https://github.com/huabf' },
 					{ icon: 'ph:envelope-simple-bold', text: blogConfig.author.email, url: `mailto:${blogConfig.author.email}` },
 				],
 			},
