@@ -8,7 +8,7 @@ const basicConfig = {
 		author: {
 			name: 'mushroom',
 			avatar: '/images/avatar.jpg',
-			email: '',
+			email: 'fateemagumel092@gmail.com',
 			homepage: 'https://github.com/huabf',
 		},
 	copyright: {

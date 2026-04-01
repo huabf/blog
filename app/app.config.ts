@@ -81,7 +81,6 @@ export default defineAppConfig({
 				items: [
 					{ icon: 'simple-icons:nuxt', text: `主题: ${pascalCase(name)} ${version}`, url: 'https://github.com/L33Z22L11/blog-v3' },
 					{ icon: 'ph:swatches-bold', text: '主题文档', url: '/theme' },
-					{ icon: 'ph:certificate-bold', text: '备案号（选填）', url: 'https://beian.miit.gov.cn/' },
 				],
 			},
 		] satisfies Nav,
@@ -93,7 +92,7 @@ export default defineAppConfig({
 		/** 展示标题文本，否则展示纯 Logo */
 		showTitle: true,
 		subtitle: blogConfig.subtitle,
-		emojiTail: ['📄', '🦌', '🙌', '🐟', '🏖️'],
+		emojiTail: ['🍄', '🌿', '🍄', '🌿', '🍄'],
 	},
 
 	/** 友链页面 */
