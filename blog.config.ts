@@ -20,7 +20,7 @@ const basicConfig = {
 	language: 'zh-CN',
 	timeEstablished: '2026-04-01',
 	timeZone: 'Asia/Shanghai',
-	url: 'https://blog.example.com/',
+	url: 'https://blog.mushfate.top/',
 	defaultCategory: '未分类',
 }
 
