@@ -5,18 +5,18 @@ const basicConfig = {
 	subtitle: 'HELLO:- >',
 	// 长 description 利好于 SEO
 	description: 'HELLO:- >',
-		author: {
-			name: 'mushroom',
-			avatar: '/images/avatar.jpg',
-			email: 'fateemagumel092@gmail.com',
-			homepage: 'https://github.com/huabf',
-		},
+	author: {
+		name: 'mushroom',
+		avatar: '/images/avatar.jpg',
+		email: 'fateemagumel092@gmail.com',
+		homepage: 'https://github.com/huabf',
+	},
 	copyright: {
 		abbr: 'CC BY-NC-SA 4.0',
 		name: '署名-非商业性使用-相同方式共享 4.0 国际',
 		url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans',
 	},
-	favicon: 'https://example.com/favicon.ico',
+	favicon: 'https://raw.githubusercontent.com/huabf/blog-images/main/images/TEST.jpg',
 	language: 'zh-CN',
 	timeEstablished: '2026-04-01',
 	timeZone: 'Asia/Shanghai',
