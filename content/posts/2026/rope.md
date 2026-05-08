@@ -37,7 +37,7 @@ int ret2win()
 ```
 执行ret2win函数会返回flag。但由于 system() 调用要求栈必须 16 字节对齐，如果直接跳到函数入口 0x400756 ，栈会不对齐导致崩溃。有两种解决方案：一是用额外的 ret gadget 消耗栈空间使其对齐；二是直接跳到 0x400757 ，栈自然对齐。(ret是一条汇编指令，意思是：从栈顶取出一个地址，跳过去执行)这里我用ROPgadget 找一个 ret：
 ```bash
-ROPgadget --binary ret2win || grep ret
+ROPgadget --binary xxx --only "pop|ret"
 ###返回 0x000000000040053e : ret
 ```
 写payload
