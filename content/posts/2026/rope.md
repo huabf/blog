@@ -3,7 +3,7 @@ title: ROP Emporium的一些wp
 description: 关于ROP Emporium的一些总结
 date: 2026-05-07 22:17:50
 updated: 2026-05-07 22:17:50
-image: https://cdn.jsdelivr.net/gh/huabf/blog-images/1.jpg
+image: https://img.mushfate.top/2026/05/0bc9fb1703f785617edfb20da547288a.jpg
 categories: [技术]
 tags: [学习]
 ---
@@ -171,5 +171,5 @@ io.interactive()
 
 拿到flag:`ROPE{a_placeholder_32byte_flag!}`
 
-相信有细心的同学发现了,在这段脚本里我使用了 **flat** 这个函数取代了臃肿的 **payload+=** 。在ROP链里, **flat** 可以按照顺序自动把每一段payload增添到已写的payload后面。如 `pop_rdi_rsi_rdx, a1, a2, a3,callme_one` 里,**a1,a2,a3**根据顺序依次存入寄存器**rdi,rsi,rdx**,作为调用 **callme_one** 的三个参数,保证程序正常运行。在使用 **flat** 函数时，需要在脚本开头加上这样一段话 `context.arch = 'amd64'`, 让 `flat()` 使用 **64 位**打包。这是因为`flat()` 默认使用 **32位** 打包，数值太大超出了范围,会造成程序报错。
+相信有细心的同学发现了,在这段脚本里我使用了 **flat** 这个函数取代了臃肿的 **payload+=** 。在ROP链里, **flat** 可以按照顺序自动把每一段payload增添到已写的payload后面。如 `pop_rdi_rsi_rdx, a1, a2, a3,callme_one` 里,**a1,a2,a3**根据顺序依次存入寄存器**rdi,rsi,rdx**,作为调用 **callme_one** 的三个参数,保证程序正常运行。在使用 **flat** 函数时，需要在脚本开头加上这样一段话 `context.arch = 'amd64'`, 这段话可以让 `flat()` 使用 **64 位**打包。这是因为`flat()` 默认使用 **32位** 打包，数值太大超出了范围,会造成程序报错。
 
