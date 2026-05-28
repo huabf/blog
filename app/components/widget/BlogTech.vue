@@ -30,8 +30,8 @@ const [pm, pmVersion] = packageManager.split('@') as [string, string]
 	}
 
 	const service = computed(() => {
-		// 固定显示为 GitHub（使用 ph:github-logo-bold 图标以与站内样式一致）
-		const storageItem = () => [h(Icon, { name: 'ph:github-logo-bold', alt: '' }), ' GitHub']
+		const avatarHost = new URL(appConfig.author.avatar).host
+		const storageItem = () => [h(Icon, { name: hostIcon(avatarHost), alt: '' }), ` ${avatarHost}`]
 
 		return [
 			...ci ? [{ label: '构建平台', value: ciPlatform }] : [],

