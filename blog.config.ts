@@ -2,8 +2,7 @@ import type { FeedEntry } from './app/types/feed'
 
 const basicConfig = {
 	title: 'mushroom growing',
-	subtitle: 'HELLO:- >',
-	// 长 description 利好于 SEO
+	subtitle: '记录 CTF 与网络安全学习',
 	description: 'HELLO:- >这里是mushroom的个人博客，记录CTF和网络安全学习',
 	author: {
 		name: 'mushroom',
