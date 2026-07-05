@@ -200,7 +200,7 @@ description: '博客描述',
 - **Nuxt Content 文档**: https://content.nuxt.com
 - **Vercel 文档**: https://vercel.com/docs
 - **Cloudflare 文档**: https://developers.cloudflare.com
-- **项目主题作者博客**: https://blog.zhilu.site
+- **项目主题上游仓库**: https://github.com/L33Z22L11/blog-v3
 
 ---
 

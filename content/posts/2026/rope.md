@@ -10,13 +10,14 @@ tags: [学习]
 
 ## ROP Emporium
 
-贴上链接
+贴上链接。后编:在做这个项目挑战之前，我并没有寄存器和汇编语言等的相关知识储备，这篇wp是边学边写的记录，如有技术性错误或不严谨的地方，欢迎联系我指正。
 
 ::link-card
 ---
 title: ROP Emporium
 icon: https://ropemporium.com/favicon/favicon.ico
 link: https://ropemporium.com/
+
 class: gradient-card active
 ---
 ::

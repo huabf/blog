@@ -4,11 +4,11 @@ const basicConfig = {
 	title: 'mushroom growing',
 	subtitle: 'HELLO:- >',
 	// 长 description 利好于 SEO
-	description: 'HELLO:- >',
+	description: 'HELLO:- >这里是mushroom的个人博客，记录CTF和网络安全学习',
 	author: {
 		name: 'mushroom',
 		avatar: 'https://img.mushfate.top/2026/05/ad59b21fe04328ee391c77d35e68a7db.jpg',
-		email: 'fateemagumel092@gmail.com',
+		email: '2940716783@qq.com',
 		homepage: 'https://github.com/huabf',
 	},
 	copyright: {
